@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>PyTorch 画像認識 API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ベーススタイル */
+        body { 
+            font-family: 'Noto Sans JP', sans-serif; 
+            margin: 0; 
+            padding: 40px; 
+            background-color: #f4f7f6; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container { 
+            width: 100%;
+            max-width: 750px; 
+            background: #ffffff;
+            padding: 30px; 
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+        }
+        h2 { 
+            color: #333; 
+            border-bottom: 2px solid #007bff; 
+            padding-bottom: 10px; 
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        /* メッセージエリア */
+        .message { padding: 15px; border-radius: 6px; margin-bottom: 20px; font-weight: 700; }
+        .message-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* アップロードフォーム */
+        .upload-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: #fcfcfc;
+        }
+        .custom-file-input {
+            opacity: 0; /* 標準のinputを隠す */
+            position: absolute;
+            z-index: 10;
+            width: 150px;
+            height: 40px;
+            cursor: pointer;
+        }
+        .upload-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 400;
+            transition: background-color 0.2s;
+        }
+        .upload-button:hover {
+            background-color: #0056b3;
+        }
+        .file-name-display {
+            font-style: italic;
+            color: #555;
+            flex-grow: 1;
+        }
+        #submit-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #submit-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        /* 認識結果エリア */
+        .result-section { margin-top: 30px; display: flex; gap: 30px; }
+        .image-preview-container { flex: 1; min-width: 300px; }
+        .result-details { flex: 1; padding: 20px; background-color: #e9ecef; border-radius: 8px; }
+        .uploaded-image { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .result-details p { margin-bottom: 10px; font-size: 1.1em; }
+        .result-details strong { color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>画像認識 API テスト</h2>
+
+        {% if error %}
+            <div class="message message-error">エラー: {{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+            <div class="message message-success">✅ 画像のアップロードと推論に成功しました！</div>
+        {% endif %}
+
+        <h3>画像アップロード</h3>
+        
+        <form method="POST" action="/upload" enctype="multipart/form-data" class="upload-area">
+            
+            <label for="file-upload" class="upload-button">ファイルを選択</label>
+            <input type="file" name="file" id="file-upload" class="custom-file-input" accept="image/*" required>
+            
+            <span id="file-name" class="file-name-display">ファイルが選択されていません</span>
+
+            <button type="submit" id="submit-btn">アップロードして予測</button>
+        </form>
+
+        {% if result %}
+            <div class="result-section">
+                
+                <div class="image-preview-container">
+                    <h4>アップロードされた画像</h4>
+                    <img src="{{ uploaded_image_url }}" alt="Uploaded Image" class="uploaded-image" id="preview-image">
+                </div>
+
+                <div class="result-details">
+                    <h4>認識結果</h4>
+                    <p><strong>クラス ID:</strong> {{ result.class_id }}</p>
+                    <p><strong>クラス名:</strong> <strong>{{ result.class_name }}</strong></p>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+    
+    <script>
+        document.getElementById('file-upload').onchange = function () {
+            const fileInput = this;
+            const fileNameDisplay = document.getElementById('file-name');
+            const previewImage = document.getElementById('preview-image');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileNameDisplay.textContent = file.name;
+
+                // サーバーからの結果表示後にローカルプレビューを更新すると二重表示になるため、
+                // プレビューの機能は一旦コメントアウトしておきます。
+                // (サーバーからの結果表示時に、既にアップロード画像が表示されているため)
+                
+            } else {
+                fileNameDisplay.textContent = 'ファイルが選択されていません';
+            }
+        };
+    </script>
+</body>
+</html>
