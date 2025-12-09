@@ -4,6 +4,8 @@
 
 Web UI も組み込まれており、ブラウザから簡単に画像ファイルをアップロードし、推論結果を確認できます。
 
+<img width="1920" height="935" alt="スクリーンショット 2025-12-09 14 29 19" src="https://github.com/user-attachments/assets/eef20dfd-2c66-4b90-9c3e-5255a0e8caec" />  
+
 
 ## 🛠️ 環境構築手順 (macOS / pyenv)
 
